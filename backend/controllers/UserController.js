@@ -189,7 +189,7 @@ module.exports = class UserController {
         { $set: user },
         { new: true }
       );
-      res.json({
+      res.status(200).json({
         message: "Usuário atualizado com sucesso!",
         data: updatedUser,
       });
