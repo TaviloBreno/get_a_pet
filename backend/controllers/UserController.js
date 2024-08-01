@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const createUserToken = require('../helpers/create-user-token');
 const getToken = require('../helpers/get-token');
 const jwt = require('jsonwebtoken');
+const checkToken = require('../helpers/verify-token');
 
 module.exports = class UserController{
     static async register(req, res){
@@ -112,5 +113,52 @@ module.exports = class UserController{
         }
 
         res.status(200).json({user: user});
+    }
+
+    static async editUser(req, res){
+        const id = req.params.id;
+        const name = req.body.name;
+        const email = req.body.email;
+        const phone = req.body.phone;
+        const password = req.body.password;
+        const confirmPassword = req.body.confirmPassword;
+
+        if(!name){
+            return res.status(400).json({message: 'O nome é obrigatório'});
+        }
+
+        if(!email){
+            return res.status(400).json({message: 'O email é obrigatório'});
+        }
+
+        if(!phone){
+            return res.status(400).json({message: 'O telefone é obrigatório'});
+        }
+
+        if(password !== confirmPassword){
+            return res.status(400).json({message: 'As senhas não conferem'});
+        }
+
+        const user = await User.findById(id);
+
+        if(!user){
+            return res.status(400).json({message: 'Usuário não encontrado'});
+        }
+
+        const salt = await bcrypt.genSalt(12);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        user.name = name;
+        user.email = email;
+        user.phone = phone;
+        user.password = hashedPassword;
+
+        try {
+            const updatedUser = await user.save();
+
+            res.status(200).json({message: 'Usuário atualizado com sucesso', user: updatedUser});
+        } catch (err) {
+            res.status(400).json({message: err.message});
+        }
     }
 }
