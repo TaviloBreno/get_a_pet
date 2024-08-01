@@ -52,6 +52,6 @@ Get A Pet é uma plataforma inovadora que conecta pessoas interessadas em adotar
 ### Clonar o Repositório
 
 ```bash
-git clone https://github.com/seu-usuario/get-a-pet.git
+git clone https://github.com/TaviloBreno/get_a_pet.git
 cd backend
 cd frontend
